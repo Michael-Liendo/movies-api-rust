@@ -7,7 +7,7 @@ use crate::{
 };
 
 pub fn routes() -> Router {
-    todo!()
+    Router::new()
 }
 
 async fn create_movie(
