@@ -1,7 +1,9 @@
-use axum::response::Result;
 use std::sync::{Arc, Mutex};
 
-use crate::model::movies_model::{Movie, MovieForCreate};
+use crate::{
+    error::Result,
+    model::movies_model::{Movie, MovieForCreate},
+};
 
 #[derive(Clone)]
 pub struct MovieController {
