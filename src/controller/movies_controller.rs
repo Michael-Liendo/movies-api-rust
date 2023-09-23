@@ -47,4 +47,15 @@ impl MovieController {
 
         Ok(movies)
     }
+
+    pub async fn get_movie(&self, id: i32) -> Result<Option<Movie>> {
+        let store = self.movies_store.lock().unwrap();
+
+        let movie = store
+            .iter()
+            .filter_map(|movie| movie.clone())
+            .find(|movie| movie.id == id);
+
+        Ok(movie)
+    }
 }
