@@ -5,10 +5,10 @@ use serde::Serialize;
 pub type Result<T> = core::result::Result<T, Error>;
 
 #[derive(Clone, Debug, Serialize)]
-#[serde(tag = "type", content = "data")]
-pub enum Error {}
+pub enum Error {
+    NotFound,
+}
 
-// region:    --- Error Boilerplate
 impl core::fmt::Display for Error {
     fn fmt(&self, fmt: &mut core::fmt::Formatter) -> core::result::Result<(), core::fmt::Error> {
         write!(fmt, "{self:?}")
@@ -21,20 +21,10 @@ impl IntoResponse for Error {
     fn into_response(self) -> Response {
         println!("->> {:<12} - {self:?}", "INTO_RES");
 
-        let mut response = StatusCode::INTERNAL_SERVER_ERROR.into_response();
+        let status_code = match self {
+            Error::NotFound => StatusCode::NOT_FOUND,
+        };
 
-        response.extensions_mut().insert(self);
-
-        response
-    }
-}
-
-impl Error {
-    pub fn client_status_and_error(&self) -> StatusCode {
-        match self {
-            // -- 400 Bad Request.
-            // -- Fallback.
-            _ => StatusCode::INTERNAL_SERVER_ERROR,
-        }
+        status_code.into_response()
     }
 }
