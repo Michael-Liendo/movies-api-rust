@@ -1,4 +1,4 @@
-use axum::{extract::State, Json, Router};
+use axum::{extract::State, routing::post, Json, Router};
 
 use crate::{
     controller::movies_controller::MovieController,
@@ -6,8 +6,10 @@ use crate::{
     model::movies_model::{Movie, MovieForCreate},
 };
 
-pub fn routes() -> Router {
+pub fn routes(mc: MovieController) -> Router {
     Router::new()
+        .route("/movies", post(create_movie).get(list_movies))
+        .with_state(mc)
 }
 
 async fn create_movie(
@@ -16,7 +18,15 @@ async fn create_movie(
 ) -> Result<Json<Movie>> {
     println!("->> {:<12} - CREATE_MOVIE", "HANDLER");
 
-    todo!("Create a movie");
+    let movie = mc.create_movie(movie_for_create).await?;
 
-    // Ok(Json(movie))
+    Ok(Json(movie))
+}
+
+async fn list_movies(State(mc): State<MovieController>) -> Result<Json<Vec<Movie>>> {
+    println!("->> {:<12} - LIST_MOVIES", "HANDLER");
+
+    let movies = mc.list_movies().await?;
+
+    Ok(Json(movies))
 }

@@ -1,1 +1,1 @@
-mod movie;
+pub mod movie;
