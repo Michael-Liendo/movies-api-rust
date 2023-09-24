@@ -58,4 +58,12 @@ impl MovieController {
 
         Ok(movie)
     }
+
+    pub async fn delete_movie(&self, id: i32) -> Result<Option<Movie>> {
+        let mut store = self.movies_store.lock().unwrap();
+
+        let movie = store.get_mut(id as usize).and_then(|m| m.take());
+
+        Ok(movie)
+    }
 }
