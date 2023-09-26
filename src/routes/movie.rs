@@ -14,7 +14,7 @@ use crate::{
 pub fn routes(mc: MovieController) -> Router {
     Router::new()
         .route("/movies", post(create_movie).get(list_movies))
-        .route("/movies/:id", get(get_movie))
+        .route("/movies/:id", get(get_movie).delete(delete_movie))
         .with_state(mc)
 }
 
@@ -41,6 +41,20 @@ async fn get_movie(State(mc): State<MovieController>, Path(id): Path<i32>) -> Re
     println!("->> {:<12} - GET_MOVIE", "HANDLER");
 
     let movie_option = mc.get_movie(id).await?;
+
+    match movie_option {
+        Some(movie) => Ok(Json(movie)),
+        None => Err(Error::NotFound),
+    }
+}
+
+async fn delete_movie(
+    State(mc): State<MovieController>,
+    Path(id): Path<i32>,
+) -> Result<Json<Movie>> {
+    println!("->> {:<12} - DELETE_MOVIE", "HANDLER");
+
+    let movie_option = mc.delete_movie(id).await?;
 
     match movie_option {
         Some(movie) => Ok(Json(movie)),
