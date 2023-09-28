@@ -59,6 +59,29 @@ impl MovieController {
         Ok(movie)
     }
 
+    pub async fn edit_movie(&self, id: i32, movie_for_edit: MovieForCreate) -> Result<Movie> {
+        let mut store = self.movies_store.lock().unwrap();
+
+        let movie = store
+            .iter_mut()
+            .find(|movie| movie.as_ref().map_or(false, |m| m.id == id));
+
+        let movie = movie.unwrap();
+
+        if let Some(movie) = movie {
+            movie.title = movie_for_edit.title;
+            movie.year = movie_for_edit.year;
+            movie.length = movie_for_edit.length;
+            movie.genre = movie_for_edit.genre;
+            movie.studio = movie_for_edit.studio;
+            movie.rating = movie_for_edit.rating;
+            movie.format = movie_for_edit.format;
+            movie.owner = movie_for_edit.owner;
+        }
+
+        Ok(movie.clone().unwrap())
+    }
+
     pub async fn delete_movie(&self, id: i32) -> Result<Option<Movie>> {
         let mut store = self.movies_store.lock().unwrap();
 
